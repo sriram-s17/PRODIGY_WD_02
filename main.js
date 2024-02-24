@@ -12,9 +12,6 @@ const tbody = document.querySelector("tbody");
 
 let interval;
 let time=0;
-let lapmin, lapsec, lapmillisec,  tr;
-let lapcount =0
-let pretotmin=pretotsec=pretotmillisec="0";
 
 function runtime(){
         interval = setInterval(()=>{    //in this function, first time runs then callback function executed
@@ -43,7 +40,7 @@ reset.addEventListener("click",()=>{
     [millisec, sec, min].forEach((timeel)=>{
         timeel.textContent="00";
     })
-    time=0;
+    time=lapcount=preoveralltime=0;
     buttons.classList.remove("pausestate");
     buttons.classList.add("freshstate");
     laps.style.display="none";
@@ -51,16 +48,28 @@ reset.addEventListener("click",()=>{
     pretotmin=pretotsec=pretotmillisec="0";
 });
 
+let lapcount = 0;
+let overalltime, overallmin, overallsec, overallmillisec;
+let laptime, lapmin, lapsec, lapmillisec;
+let preoveralltime=0;
+let tr;
+
 lap.addEventListener("click",()=>{
     lapcount += 1;
-    lapmin = min.textContent;
-    lapsec = sec.textContent;
-    lapmillisec = millisec.textContent;
-    pretotmin = (Number(lapmin)-Number(pretotmin)).toString().padStart(2,"0");
-    pretotsec = (Number(lapsec)-Number(pretotsec)).toString().padStart(2,"0");
-    pretotmillisec = (Number(lapmillisec) - Number(pretotmillisec)).toString().padStart(2,"0");
+    
+    overalltime = time;
+    overallmillisec=((overalltime%1000)/10).toString().padStart(2,"0")
+    overallsec=(Math.floor((overalltime/1000))%60).toString().padStart(2,"0")
+    overallmin=Math.floor(overalltime/60000).toString().padStart(2,"0")
+    
+    laptime = overalltime - preoveralltime;
+    lapmillisec=((laptime%1000)/10).toString().padStart(2,"0")
+    lapsec=(Math.floor((laptime/1000))%60).toString().padStart(2,"0")
+    lapmin=Math.floor(laptime/60000).toString().padStart(2,"0")
+
     tr = document.createElement("tr");
-    tr.innerHTML="<td>"+lapcount+"</td><td>"+pretotmin+":"+pretotsec+"."+pretotmillisec+"</td><td>"+lapmin+":"+lapsec+"."+lapmillisec+"</td>";
+    tr.innerHTML="<td>"+lapcount+"</td><td>"+lapmin+":"+lapsec+"."+lapmillisec+"</td><td>"+overallmin+":"+overallsec+"."+overallmillisec+"</td>";
     laps.style.display="block";
     tbody.appendChild(tr);
+    preoveralltime =  overalltime;
 })
